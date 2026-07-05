@@ -1,0 +1,12 @@
+{
+  "weights": {
+    "EXEC_RCE": 10,
+    "DATA_EXFIL": 8,
+    "PROMPT_INJECTION": 7,
+    "PRIVILEGE_ESCALATION": 6,
+    "IMPERSONATION": 5,
+    "REPORT_MECHANISM_PROBE": 4
+  },
+  "description": "Severity multipliers for weighted recall calculation. Higher = more critical to catch.",
+  "usage": "weighted_recall = sum(weight[class] * detected[class]) / sum(weight[class] * total[class]) for all threat classes"
+}
