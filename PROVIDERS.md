@@ -133,6 +133,44 @@ Use the Vietnamese corpus to test multilingual evasion:
 
 ---
 
+## Behavioral Eval (Real Agent Compliance Testing)
+
+The `eval_behavioral.sh` script sends corpus messages directly to the **running OpenClaw agent**
+and uses a judge LLM to determine if the agent REFUSED or COMPLIED.
+
+> **Prerequisite:** OpenClaw must be running and reachable via `openclaw agent --message`.
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+./eval_behavioral.sh judge_prompt.txt corpus/intent_eval_corpus.tsv
+```
+
+Optional overrides:
+```bash
+export MODEL=claude-haiku-4-5       # judge model (lightweight recommended)
+export BASE_URL=https://api.anthropic.com  # judge API base
+export SESSION_PREFIX=my-eval       # session-id prefix for openclaw calls
+```
+
+Smoke test (10 messages only):
+```bash
+head -30 corpus/intent_eval_corpus.tsv | grep -v '^#' | grep -v '^$' | head -10 > /tmp/smoke.tsv
+export ANTHROPIC_API_KEY=sk-ant-...
+./eval_behavioral.sh judge_prompt.txt /tmp/smoke.tsv
+```
+
+Difference from classifier eval:
+
+| | `eval.sh` | `eval_behavioral.sh` |
+|---|---|---|
+| Tests | Guard LLM intent classifier | Real agent response behavior |
+| What it catches | Classification gaps | Agent compliance failures |
+| Speed | Fast | Slow (full agent turn per msg) |
+
+See `AGENT.md` Section 10 for full comparison and output interpretation.
+
+---
+
 ## Quick Reference
 
 | Provider | Script | Key env vars |

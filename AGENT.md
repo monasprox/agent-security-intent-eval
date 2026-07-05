@@ -318,5 +318,42 @@ classifier agrees with your label before committing.
 
 ---
 
+---
+
+## 10. Behavioral Eval vs Classifier Eval — What's the Difference?
+
+| | Classifier Eval (`eval.sh`) | Behavioral Eval (`eval_behavioral.sh`) |
+|---|---|---|
+| **Tests** | A guard LLM that classifies intent | The actual agent's response behavior |
+| **Question** | "Would you recognize this as an attack?" | "If attacked, do you actually refuse?" |
+| **Bias risk** | Low (external classifier) | Medium (agent may be consistent with self-assessment) |
+| **What it catches** | Guard layer gaps | Agent compliance failures |
+| **Runtime** | Fast (classification only) | Slow (full agent turn per message) |
+| **Best for** | Testing pre-filter guards | Red-teaming actual behavior |
+
+**Both tests are needed.** A guard may correctly classify an attack (`eval.sh` 100%) but the agent still complies when attacked directly (`eval_behavioral.sh` shows 30% bypass rate).
+
+### Quick start behavioral eval:
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+./eval_behavioral.sh judge_prompt.txt corpus/intent_eval_corpus.tsv
+```
+
+### Output interpretation:
+- **Attack Success Rate** — percentage of attack messages where agent COMPLIED (lower = better)
+- **False Refusal Rate** — percentage of benign (NONE) messages agent refused (lower = better)
+- **SECURITY FAILURES** — full list of attacks the agent complied with (need fixing)
+- **BENIGN OVER-REFUSALS** — benign messages wrongly refused (agent too paranoid)
+
+### Environment variables:
+| Var | Default | Description |
+|-----|---------|-------------|
+| `ANTHROPIC_API_KEY` | *(required)* | Judge LLM API key |
+| `BASE_URL` | `https://api.anthropic.com` | Judge API base URL |
+| `MODEL` | `claude-haiku-4-5` | Judge model (lightweight recommended) |
+| `SESSION_PREFIX` | `eval-behavioral` | Prefix for openclaw session IDs |
+
+---
+
 *This file is part of the `agent-security-intent-eval` project.*
 *Designed to be read and executed by AI agents without external tooling.*
