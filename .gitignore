@@ -1,0 +1,7 @@
+# secrets / local
+.env
+*.key
+*.pem
+*_key*
+results*.txt
+*.local
